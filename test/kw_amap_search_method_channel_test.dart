@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kw_amap_search/kw_amap_search_method_channel.dart';
+import 'package:kw_amap_search/search_result_item.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,13 @@ void main() {
           if (methodCall.method == 'searchKeyword' ||
               methodCall.method == 'searchAround') {
             return <Object?>[_samplePoiJson()];
+          }
+          if (methodCall.method == 'failingSearch') {
+            throw PlatformException(
+              code: 'AMAP_SEARCH_ERROR',
+              message: 'Invalid user key',
+              details: <String, Object?>{'errorCode': 1002},
+            );
           }
           return null;
         });
@@ -55,13 +63,15 @@ void main() {
     expect(calls[2].arguments, <String, Object?>{'hasAgree': true});
   });
 
-  test('searchKeyword invokes native method and parses POI items', () async {
-    final results = await platform.searchKeyword(
-      keyword: 'coffee',
-      city: 'Shanghai',
-      types: '050000',
-      pageSize: 10,
-      pageNum: 2,
+  test('searchByKeyword invokes native method and parses POI items', () async {
+    final results = await platform.searchByKeyword(
+      const AmapKeywordSearchQuery(
+        keyword: 'coffee',
+        city: 'Shanghai',
+        types: '050000',
+        pageSize: 10,
+        pageNum: 2,
+      ),
     );
 
     expect(calls.single.method, 'searchKeyword');
@@ -72,34 +82,61 @@ void main() {
       'pageSize': 10,
       'pageNum': 2,
     });
-    expect(results.single.title, 'Sample POI');
-    expect(results.single.latLonPoint.longitude, 121.4737);
+    expect(results.single.name, 'Sample POI');
+    expect(results.single.location.longitude, 121.4737);
   });
 
-  test('searchAround invokes native method and parses POI items', () async {
-    final results = await platform.searchAround(
-      latitude: 31.2304,
-      longitude: 121.4737,
-      keyword: 'tea',
-      city: 'Shanghai',
-      types: '050000',
-      pageSize: 12,
-      pageNum: 3,
+  test(
+    'searchNearby invokes native method with radius and parses POI items',
+    () async {
+      final results = await platform.searchNearby(
+        const AmapAroundSearchQuery(
+          center: AmapLatLng(latitude: 31.2304, longitude: 121.4737),
+          radius: 1500,
+          keyword: 'tea',
+          city: 'Shanghai',
+          types: '050000',
+          pageSize: 12,
+          pageNum: 3,
+        ),
+      );
+
+      expect(calls.single.method, 'searchAround');
+      expect(calls.single.arguments, <String, Object?>{
+        'latitude': 31.2304,
+        'longitude': 121.4737,
+        'radius': 1500,
+        'keyword': 'tea',
+        'city': 'Shanghai',
+        'types': '050000',
+        'pageSize': 12,
+        'pageNum': 3,
+      });
+      expect(results.single.id, 'B001');
+      expect(results.single.photos.single.title, 'front');
+    },
+  );
+
+  test('converts PlatformException into AmapSearchException', () async {
+    final testPlatform = _FailingMethodChannelKwAmapSearch();
+
+    await expectLater(
+      testPlatform.triggerFailingSearch(),
+      throwsA(
+        isA<AmapSearchException>()
+            .having((error) => error.code, 'code', 'AMAP_SEARCH_ERROR')
+            .having((error) => error.details, 'details', <String, Object?>{
+              'errorCode': 1002,
+            }),
+      ),
     );
-
-    expect(calls.single.method, 'searchAround');
-    expect(calls.single.arguments, <String, Object?>{
-      'latitude': 31.2304,
-      'longitude': 121.4737,
-      'keyword': 'tea',
-      'city': 'Shanghai',
-      'types': '050000',
-      'pageSize': 12,
-      'pageNum': 3,
-    });
-    expect(results.single.poiId, 'B001');
-    expect(results.single.photos.single.title, 'front');
   });
+}
+
+class _FailingMethodChannelKwAmapSearch extends MethodChannelKwAmapSearch {
+  Future<void> triggerFailingSearch() async {
+    await invokeNative<void>('failingSearch');
+  }
 }
 
 Map<String, Object?> _samplePoiJson() {

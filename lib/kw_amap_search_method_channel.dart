@@ -10,17 +10,26 @@ class MethodChannelKwAmapSearch extends KwAmapSearchPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('kw_amap_search');
 
+  /// Invokes the native SDK and converts platform errors to the plugin's typed
+  /// exception so callers can distinguish SDK failures from empty result sets.
+  @visibleForTesting
+  Future<T?> invokeNative<T>(String method, [Object? arguments]) async {
+    try {
+      return await methodChannel.invokeMethod<T>(method, arguments);
+    } on PlatformException catch (error) {
+      throw AmapSearchException.fromPlatformException(error);
+    }
+  }
+
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>(
-      'getPlatformVersion',
-    );
+    final version = await invokeNative<String>('getPlatformVersion');
     return version;
   }
 
   @override
   Future<void> setApiKey(String androidKey, String iosKey) async {
-    await methodChannel.invokeMethod<void>('setApiKey', <String, Object?>{
+    await invokeNative<void>('setApiKey', <String, Object?>{
       'androidKey': androidKey,
       'iosKey': iosKey,
     });
@@ -28,59 +37,38 @@ class MethodChannelKwAmapSearch extends KwAmapSearchPlatform {
 
   @override
   Future<void> updatePrivacyShow(bool hasContains, bool hasShow) async {
-    await methodChannel.invokeMethod<void>(
-      'updatePrivacyShow',
-      <String, Object?>{'hasContains': hasContains, 'hasShow': hasShow},
-    );
+    await invokeNative<void>('updatePrivacyShow', <String, Object?>{
+      'hasContains': hasContains,
+      'hasShow': hasShow,
+    });
   }
 
   @override
   Future<void> updatePrivacyAgree(bool hasAgree) async {
-    await methodChannel.invokeMethod<void>(
-      'updatePrivacyAgree',
-      <String, Object?>{'hasAgree': hasAgree},
-    );
+    await invokeNative<void>('updatePrivacyAgree', <String, Object?>{
+      'hasAgree': hasAgree,
+    });
   }
 
   @override
-  Future<List<SearchResultItem>> searchKeyword({
-    required String keyword,
-    String city = '',
-    String types = '',
-    int pageSize = 20,
-    int pageNum = 1,
-  }) async {
-    final dataList = await methodChannel
-        .invokeMethod<List<dynamic>>('searchKeyword', <String, Object?>{
-          'keyword': keyword,
-          'city': city,
-          'types': types,
-          'pageSize': pageSize,
-          'pageNum': pageNum,
-        });
+  Future<List<SearchResultItem>> searchByKeyword(
+    AmapKeywordSearchQuery query,
+  ) async {
+    final dataList = await invokeNative<List<dynamic>>(
+      'searchKeyword',
+      query.toMethodArguments(),
+    );
     return (dataList ?? <dynamic>[]).map(SearchResultItem.fromJson).toList();
   }
 
   @override
-  Future<List<SearchResultItem>> searchAround({
-    required double latitude,
-    required double longitude,
-    String keyword = '',
-    String city = '',
-    String types = '',
-    int pageSize = 20,
-    int pageNum = 1,
-  }) async {
-    final dataList = await methodChannel
-        .invokeMethod<List<dynamic>>('searchAround', <String, Object?>{
-          'latitude': latitude,
-          'longitude': longitude,
-          'keyword': keyword,
-          'city': city,
-          'types': types,
-          'pageSize': pageSize,
-          'pageNum': pageNum,
-        });
+  Future<List<SearchResultItem>> searchNearby(
+    AmapAroundSearchQuery query,
+  ) async {
+    final dataList = await invokeNative<List<dynamic>>(
+      'searchAround',
+      query.toMethodArguments(),
+    );
     return (dataList ?? <dynamic>[]).map(SearchResultItem.fromJson).toList();
   }
 }

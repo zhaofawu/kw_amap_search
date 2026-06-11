@@ -40,6 +40,15 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
     throw UnimplementedError('updatePrivacyAgree() has not been implemented.');
   }
 
+  Future<List<SearchResultItem>> searchByKeyword(AmapKeywordSearchQuery query) {
+    throw UnimplementedError('searchByKeyword() has not been implemented.');
+  }
+
+  Future<List<SearchResultItem>> searchNearby(AmapAroundSearchQuery query) {
+    throw UnimplementedError('searchNearby() has not been implemented.');
+  }
+
+  /// Backward-compatible wrapper for the first public Android API.
   Future<List<SearchResultItem>> searchKeyword({
     required String keyword,
     String city = '',
@@ -47,18 +56,39 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
     int pageSize = 20,
     int pageNum = 1,
   }) {
-    throw UnimplementedError('searchKeyword() has not been implemented.');
+    return searchByKeyword(
+      AmapKeywordSearchQuery(
+        keyword: keyword,
+        city: city,
+        types: types,
+        pageSize: pageSize,
+        pageNum: pageNum,
+      ),
+    );
   }
 
+  /// Backward-compatible wrapper. [radius] defaults to the original hard-coded
+  /// Android value, but is now sent to both native platforms.
   Future<List<SearchResultItem>> searchAround({
     required double latitude,
     required double longitude,
+    int radius = 1000,
     String keyword = '',
     String city = '',
     String types = '',
     int pageSize = 20,
     int pageNum = 1,
   }) {
-    throw UnimplementedError('searchAround() has not been implemented.');
+    return searchNearby(
+      AmapAroundSearchQuery(
+        center: AmapLatLng(latitude: latitude, longitude: longitude),
+        radius: radius,
+        keyword: keyword,
+        city: city,
+        types: types,
+        pageSize: pageSize,
+        pageNum: pageNum,
+      ),
+    );
   }
 }

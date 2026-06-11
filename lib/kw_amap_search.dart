@@ -1,6 +1,8 @@
 import 'kw_amap_search_platform_interface.dart';
 import 'search_result_item.dart';
 
+export 'search_result_item.dart';
+
 class KwAmapSearch {
   KwAmapSearch._();
 
@@ -23,6 +25,22 @@ class KwAmapSearch {
     return KwAmapSearchPlatform.instance.updatePrivacyAgree(hasAgree);
   }
 
+  static Future<List<SearchResultItem>> searchByKeyword(
+    AmapKeywordSearchQuery query,
+  ) {
+    return KwAmapSearchPlatform.instance.searchByKeyword(query);
+  }
+
+  static Future<List<SearchResultItem>> searchNearby(
+    AmapAroundSearchQuery query,
+  ) {
+    return KwAmapSearchPlatform.instance.searchNearby(query);
+  }
+
+  /// Legacy keyword-search API kept for source compatibility.
+  ///
+  /// New code may prefer [searchByKeyword] because query objects are easier to
+  /// extend without growing another long named-parameter list.
   static Future<List<SearchResultItem>> searchKeyword({
     required String keyword,
     String city = '',
@@ -39,9 +57,13 @@ class KwAmapSearch {
     );
   }
 
+  /// Legacy around-search API with a new optional [radius] parameter.
+  ///
+  /// The default remains 1000 meters, matching the first Android-only port.
   static Future<List<SearchResultItem>> searchAround({
     required double latitude,
     required double longitude,
+    int radius = 1000,
     String keyword = '',
     String city = '',
     String types = '',
@@ -51,6 +73,7 @@ class KwAmapSearch {
     return KwAmapSearchPlatform.instance.searchAround(
       latitude: latitude,
       longitude: longitude,
+      radius: radius,
       keyword: keyword,
       city: city,
       types: types,

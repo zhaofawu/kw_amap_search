@@ -5,16 +5,19 @@
 Pod::Spec.new do |s|
   s.name             = 'kw_amap_search'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter project.'
+  s.summary          = 'Flutter AMap POI search plugin for Android and iOS.'
   s.description      = <<-DESC
-A new Flutter project.
+Flutter plugin that wraps AMap POI keyword and nearby search with a stable
+method-channel schema for Android and iOS.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://lbs.amap.com/'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = 'kw_amap_search'
   s.source           = { :path => '.' }
   s.source_files = 'kw_amap_search/Sources/kw_amap_search/**/*'
   s.dependency 'Flutter'
+  s.dependency 'AMapFoundation-NO-IDFA', '1.9.0'
+  s.dependency 'AMapSearch-NO-IDFA', '9.8.0'
   s.platform = :ios, '13.0'
 
   # Flutter.framework does not contain a i386 slice.

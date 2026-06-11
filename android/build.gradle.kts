@@ -75,5 +75,5 @@ kotlin {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.mockito:mockito-core:5.0.0")
-    implementation("com.amap.api:search:latest.integration")
+    implementation("com.amap.api:search:9.7.1")
 }
