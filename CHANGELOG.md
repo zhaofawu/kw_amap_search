@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Migrated the Android plugin build to AGP Built-in Kotlin on AGP 9+ to remove Flutter's Kotlin Gradle Plugin warning.
+
 ## 0.0.1
 
 * Migrated Android AMap POI keyword and nearby search from the legacy plugin.
