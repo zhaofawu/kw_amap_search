@@ -17,7 +17,9 @@
 
 ### Android
 
-插件内置依赖：
+Android 宿主 App 需要自行引入高德搜索 SDK。本插件 Android 端使用 `compileOnly`
+编译高德搜索 SDK，便于多个高德插件共存时由宿主统一管理 SDK 版本。
+本仓库 example 已包含示例配置：
 
 ```kotlin
 implementation("com.amap.api:search:9.7.1")

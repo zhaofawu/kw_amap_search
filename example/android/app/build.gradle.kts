@@ -40,6 +40,10 @@ kotlin {
     }
 }
 
+dependencies {
+    implementation("com.amap.api:search:9.7.1")
+}
+
 flutter {
     source = "../.."
 }
