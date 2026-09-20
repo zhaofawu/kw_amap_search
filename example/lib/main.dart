@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,9 @@ class _MyAppState extends State<MyApp> {
   final _latitudeController = TextEditingController(text: '31.2304');
   final _longitudeController = TextEditingController(text: '121.4737');
   final _radiusController = TextEditingController(text: '1000');
+  final _pageController = TextEditingController(text: '1');
+  final _pageSizeController = TextEditingController(text: '20');
+  final _timeoutController = TextEditingController(text: '10000');
   final _typesController = TextEditingController(
     text:
         '050000|060000|070000|080000|090000|100000|110000|120000|130000|140000|150000|160000|170000|190000',
@@ -31,10 +35,13 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   String _status = 'Ready';
   bool _privacyAgreed = false;
+  bool _includeExtensions = true;
+  AmapAroundSortRule _sortRule = AmapAroundSortRule.distance;
   bool get _loading => _activeRequestIds.isNotEmpty;
   int _requestSeed = 0;
   final _activeRequestIds = <String>{};
   final _requestStatuses = <String, String>{};
+  final _requestParameters = <String, String>{};
   List<SearchResultItem> _results = const <SearchResultItem>[];
   AmapRegeocodeResult? _reverseResult;
 
@@ -53,6 +60,9 @@ class _MyAppState extends State<MyApp> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     _radiusController.dispose();
+    _pageController.dispose();
+    _pageSizeController.dispose();
+    _timeoutController.dispose();
     _typesController.dispose();
     for (final requestId in _activeRequestIds) {
       KwAmapSearch.cancelRequest(requestId).ignore();
@@ -96,17 +106,21 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _searchByKeyword() async {
     final requestId = _nextRequestId('keyword');
+    final options = _options(requestId);
     final query = AmapKeywordSearchQuery(
       keyword: _keywordController.text.trim(),
       city: _cityController.text.trim(),
       types: _typesController.text.trim(),
+      pageNum: int.tryParse(_pageController.text) ?? 0,
+      pageSize: int.tryParse(_pageSizeController.text) ?? 0,
     );
-    await _runSearch(requestId, () {
-      return KwAmapSearch.searchByKeyword(
-        query,
-        options: AmapSearchRequestOptions(requestId: requestId),
-      );
-    });
+    await _runSearch(
+      requestId,
+      () => query.toMethodArguments(options: options),
+      () {
+        return KwAmapSearch.searchByKeyword(query, options: options);
+      },
+    );
   }
 
   Future<void> _searchNearby() async {
@@ -115,23 +129,27 @@ class _MyAppState extends State<MyApp> {
       _setSearchError('Invalid coordinate');
       return;
     }
-    final radius = int.tryParse(_radiusController.text.trim()) ?? 1000;
+    final radius = int.tryParse(_radiusController.text.trim()) ?? 0;
     final requestId = _nextRequestId('nearby');
+    final options = _options(requestId);
     final query = AmapAroundSearchQuery(
       center: point,
       radius: radius,
       keyword: _keywordController.text.trim(),
       city: _cityController.text.trim(),
       types: _typesController.text.trim(),
-      sortRule: AmapAroundSortRule.distance,
+      sortRule: _sortRule,
+      pageNum: int.tryParse(_pageController.text) ?? 0,
+      pageSize: int.tryParse(_pageSizeController.text) ?? 0,
     );
 
-    await _runSearch(requestId, () {
-      return KwAmapSearch.searchNearby(
-        query,
-        options: AmapSearchRequestOptions(requestId: requestId),
-      );
-    });
+    await _runSearch(
+      requestId,
+      () => query.toMethodArguments(options: options),
+      () {
+        return KwAmapSearch.searchNearby(query, options: options);
+      },
+    );
   }
 
   Future<void> _reverseGeocode() async {
@@ -140,8 +158,14 @@ class _MyAppState extends State<MyApp> {
       _setSearchError('Invalid coordinate');
       return;
     }
-    final radius = int.tryParse(_radiusController.text.trim()) ?? 300;
+    final radius = int.tryParse(_radiusController.text.trim()) ?? 0;
     final requestId = _nextRequestId('reverse');
+    final options = _options(requestId);
+    final query = AmapReverseGeocodeQuery(
+      point: point,
+      radius: radius,
+      includeExtensions: _includeExtensions,
+    );
     _activeRequestIds.add(requestId);
     setState(() {
       _requestStatuses[requestId] = 'pending';
@@ -150,11 +174,14 @@ class _MyAppState extends State<MyApp> {
     });
 
     try {
+      _requestParameters[requestId] = jsonEncode(
+        query.toMethodArguments(options: options),
+      );
       await _prepareAmapSdk();
       if (!mounted || !_activeRequestIds.contains(requestId)) return;
       final reverse = await KwAmapSearch.reverseGeocode(
-        AmapReverseGeocodeQuery(point: point, radius: radius),
-        options: AmapSearchRequestOptions(requestId: requestId),
+        query,
+        options: options,
       );
       if (!mounted) return;
       setState(() {
@@ -203,6 +230,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _runSearch(
     String requestId,
+    Map<String, Object?> Function() parameters,
     Future<List<SearchResultItem>> Function() search,
   ) async {
     _activeRequestIds.add(requestId);
@@ -213,6 +241,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     try {
+      _requestParameters[requestId] = jsonEncode(parameters());
       await _prepareAmapSdk();
       if (!mounted || !_activeRequestIds.contains(requestId)) return;
       final results = await search();
@@ -258,10 +287,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   String _nextRequestId(String operation) {
-    if (_activeRequestIds.isEmpty) _requestStatuses.clear();
+    if (_activeRequestIds.isEmpty) {
+      _requestStatuses.clear();
+      _requestParameters.clear();
+    }
     _requestSeed += 1;
     return 'example-$_requestSeed-$operation';
   }
+
+  AmapSearchRequestOptions _options(String requestId) =>
+      AmapSearchRequestOptions(
+        requestId: requestId,
+        timeout: Duration(
+          milliseconds: int.tryParse(_timeoutController.text) ?? 0,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +323,8 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   TextField(
                     controller: _androidKeyController,
+                    obscureText: true,
+                    autocorrect: false,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Android Key',
@@ -291,6 +333,8 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _iosKeyController,
+                    obscureText: true,
+                    autocorrect: false,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'iOS Key',
@@ -373,6 +417,50 @@ class _MyAppState extends State<MyApp> {
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
+                    children: [
+                      for (final (controller, label) in [
+                        (_pageController, 'Page'),
+                        (_pageSizeController, 'Page size'),
+                        (_timeoutController, 'Timeout ms'),
+                      ])
+                        SizedBox(
+                          width: 140,
+                          child: TextField(
+                            controller: controller,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: label,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SegmentedButton<AmapAroundSortRule>(
+                    segments: const [
+                      ButtonSegment(
+                        value: AmapAroundSortRule.distance,
+                        label: Text('Distance'),
+                      ),
+                      ButtonSegment(
+                        value: AmapAroundSortRule.comprehensive,
+                        label: Text('Comprehensive'),
+                      ),
+                    ],
+                    selected: {_sortRule},
+                    onSelectionChanged: (selection) =>
+                        setState(() => _sortRule = selection.single),
+                  ),
+                  SwitchListTile(
+                    title: const Text('Reverse extensions'),
+                    value: _includeExtensions,
+                    onChanged: (value) =>
+                        setState(() => _includeExtensions = value),
+                  ),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: <Widget>[
                       FilledButton.icon(
                         onPressed: _loading ? null : _searchByKeyword,
@@ -410,7 +498,9 @@ class _MyAppState extends State<MyApp> {
               ..._requestStatuses.entries.map(
                 (entry) => ListTile(
                   title: Text(entry.key),
-                  subtitle: Text(entry.value),
+                  subtitle: Text(
+                    '${entry.value}\n${_requestParameters[entry.key] ?? ''}',
+                  ),
                   trailing: IconButton(
                     tooltip: 'Cancel ${entry.key}',
                     onPressed: _activeRequestIds.contains(entry.key)
@@ -423,6 +513,51 @@ class _MyAppState extends State<MyApp> {
               if (_reverseResult != null) ...<Widget>[
                 const SizedBox(height: 12),
                 _ReverseTile(_reverseResult!),
+                ExpansionTile(
+                  title: Text('AOI (${_reverseResult!.aois.length})'),
+                  children: [
+                    for (final aoi in _reverseResult!.aois)
+                      ListTile(
+                        title: Text(aoi.name),
+                        subtitle: Text(
+                          'ID: ${aoi.id} / adCode: ${aoi.adCode}\n'
+                          'Center: ${aoi.center?.toJson()} / Area: ${aoi.areaSquareMeters}\n'
+                          'Contains: ${aoi.containsPoint} / Boundary meters: ${aoi.distanceToBoundaryMeters}',
+                        ),
+                      ),
+                  ],
+                ),
+                ExpansionTile(
+                  title: Text('Roads (${_reverseResult!.roads.length})'),
+                  children: [
+                    for (final road in _reverseResult!.roads)
+                      ListTile(
+                        title: Text(road.name),
+                        subtitle: Text(
+                          'ID: ${road.id} / ${road.location?.toJson()}\n'
+                          'SDK meters: ${road.sdkDistanceMeters} / Direction: ${road.direction}',
+                        ),
+                      ),
+                  ],
+                ),
+                ExpansionTile(
+                  title: Text(
+                    'Intersections (${_reverseResult!.roadIntersections.length})',
+                  ),
+                  children: [
+                    for (final road in _reverseResult!.roadIntersections)
+                      ListTile(
+                        title: Text(
+                          '${road.firstRoadName} / ${road.secondRoadName}',
+                        ),
+                        subtitle: Text(
+                          'ID: ${road.firstRoadId} / ${road.secondRoadId}\n'
+                          '${road.location?.toJson()} / SDK meters: ${road.sdkDistanceMeters}\n'
+                          'Direction: ${road.direction}',
+                        ),
+                      ),
+                  ],
+                ),
                 ..._reverseResult!.pois.map(_PoiTile.new),
               ],
               const SizedBox(height: 12),

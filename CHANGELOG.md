@@ -1,5 +1,9 @@
 ## 0.1.0
 
+* Fixed iOS searches timing out because Search SDK privacy status was not forwarded; report SDK initialization failure immediately.
+* Added example paging, sorting, extension and timeout controls, masked Key fields, request parameters and reverse-geocode collection details.
+* Documented unified Android SDK and iOS NO-IDFA dependencies for map/location/search coexistence.
+* Added real-device SDK integration coverage and Android/iOS query evidence, including privacy refusal, invalid Key, paging, concurrency, cancellation, and timeout; network scenarios are tracked separately in the release report.
 * Fixed late Android callbacks removing a newer request with a reused ID; release listeners and timers on completion.
 * Fixed Dart timeout cleanup blocking or masking the original timeout error.
 * Preserved POI distances through JSON round trips and normalized negative SDK distance sentinels to null.

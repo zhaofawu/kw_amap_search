@@ -122,4 +122,137 @@ void main() {
       },
     );
   }
+
+  testWidgets('query controls serialize and invalid input stays visible', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final queries = <MethodCall>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          if (call.method == 'getPlatformVersion') return 'test';
+          if (call.method == 'searchAround') {
+            queries.add(call);
+            return <Object?>[];
+          }
+          if (call.method == 'reverseGeocode') {
+            queries.add(call);
+            return {
+              'requestedLocation': {'latitude': 31.2304, 'longitude': 121.4737},
+            };
+          }
+          return null;
+        });
+    await tester.pumpWidget(const MyApp());
+    await tester.pump();
+    await tester.tap(find.byType(CheckboxListTile));
+    for (final (label, value) in [
+      ('Page', '2'),
+      ('Page size', '5'),
+      ('Radius meters', '300'),
+      ('Timeout ms', '2500'),
+    ]) {
+      final input = find.widgetWithText(TextField, label);
+      await tester.ensureVisible(input);
+      await tester.enterText(input, value);
+    }
+    await tester.ensureVisible(find.text('Comprehensive'));
+    await tester.tap(find.text('Comprehensive'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Nearby'));
+    await tester.tap(find.text('Nearby'));
+    await tester.pumpAndSettle();
+    final arguments = queries.single.arguments as Map;
+    expect(arguments['pageNum'], 2);
+    expect(arguments['pageSize'], 5);
+    expect(arguments['radius'], 300);
+    expect(arguments['timeoutMs'], 2500);
+    expect(arguments['sortRule'], 'comprehensive');
+    await tester.ensureVisible(find.byType(SwitchListTile));
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Reverse'));
+    await tester.tap(find.text('Reverse'));
+    await tester.pumpAndSettle();
+    expect(queries.last.arguments['includeExtensions'], isFalse);
+    for (final (label, value, action) in [
+      ('Page', '0', 'Nearby'),
+      ('Radius meters', 'invalid', 'Reverse'),
+      ('Timeout ms', '0', 'Keyword'),
+    ]) {
+      final input = find.widgetWithText(TextField, label);
+      await tester.ensureVisible(input);
+      await tester.enterText(input, value);
+      final button = find.ancestor(
+        of: find.text(action),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is ButtonStyleButton,
+        ),
+      );
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('invalid_argument'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    }
+    expect(queries.length, 2);
+  });
+
+  testWidgets('failed query can retry; rapid submits and disposal clean up', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final pending = <String, Completer<Object?>>{};
+    final cancelled = <String>[];
+    var calls = 0;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          if (call.method == 'getPlatformVersion') return 'test';
+          if (call.method == 'searchKeyword') {
+            calls++;
+            if (calls == 1) {
+              throw PlatformException(code: 'sdk_error', message: 'offline');
+            }
+            final id = call.arguments['requestId'] as String;
+            expect(pending.containsKey(id), isFalse);
+            pending[id] = Completer<Object?>();
+            return pending[id]!.future;
+          }
+          if (call.method == 'cancelRequest') {
+            final id = call.arguments['requestId'] as String;
+            cancelled.add(id);
+            pending
+                .remove(id)!
+                .completeError(PlatformException(code: 'cancelled'));
+            return true;
+          }
+          return null;
+        });
+    await tester.pumpWidget(const MyApp());
+    await tester.pump();
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pump();
+    final button = find.widgetWithText(FilledButton, 'Keyword');
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('sdk_error: offline'), findsWidgets);
+    for (var i = 0; i < 3; i++) {
+      await tester.tap(button);
+    }
+    await tester.pump();
+    expect(pending, isNotEmpty);
+    final activeIds = pending.keys.toSet();
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    expect(cancelled.toSet(), activeIds);
+    expect(pending, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
 }

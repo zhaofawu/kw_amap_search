@@ -1,0 +1,1285 @@
+{
+  "device": {
+    "model": "iPhone 14 Plus",
+    "productType": "iPhone14,8",
+    "os": "iOS 16.5.1",
+    "arch": "arm64"
+  },
+  "pluginVersion": "0.1.0",
+  "productionBaseCommit": "18910d6",
+  "candidateChanges": [
+    "Forward Search SDK privacy show/agree",
+    "Fail immediately when SDK initialization returns nil"
+  ],
+  "flutterVersion": "3.44.1",
+  "searchSdkVersion": "9.8.0 NO-IDFA",
+  "foundationSdkVersion": "1.9.0 NO-IDFA",
+  "onlineTestsPassed": 5,
+  "errorTestsPassed": 1,
+  "offlineTest": {
+    "passed": true,
+    "code": "sdk_error",
+    "nativeCode": 1806,
+    "sameProcessRecoveryPassed": true,
+    "recoveryChecks": [
+      "Explicit retry of the original unique keyword returned successful empty results",
+      "Subsequent reverse geocoding returned a non-empty formatted address"
+    ],
+    "installationNote": "Offline installation attempts could not launch because iOS required network access to validate the new app. The successful run started online, then the user disabled and restored both Wi-Fi/cellular without restarting the app.",
+    "uiRetryVerified": false
+  },
+  "queries": [
+    {
+      "time": "2026-09-20T20:35:34.521821Z",
+      "platform": "ios",
+      "scenario": "reverse",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "includeExtensions": true,
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "formattedAddress": "广西壮族自治区南宁市西乡塘区安吉街道苏氏耀昌族大院明月湖公园",
+      "requestedLocation": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866
+      },
+      "aoiCount": 1,
+      "roadCount": 3,
+      "intersectionCount": 0,
+      "pois": [
+        {
+          "id": "B03030UNHS",
+          "name": "明月湖公园",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.847205,
+            "longitude": 108.278018
+          },
+          "distanceMeters": 1119.5770688556513,
+          "sdkDistanceMeters": 1119.64
+        },
+        {
+          "id": "B0FFGT1IEF",
+          "name": "翠竹公寓",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.857803,
+            "longitude": 108.282154
+          },
+          "distanceMeters": 151.56524577168338,
+          "sdkDistanceMeters": 151.55
+        },
+        {
+          "id": "B0FFL4CD31",
+          "name": "苏氏耀昌族大院",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856619,
+            "longitude": 108.281268
+          },
+          "distanceMeters": 34.43886588123553,
+          "sdkDistanceMeters": 34.463
+        },
+        {
+          "id": "B0LAJSOXKZ",
+          "name": "鹧鸪渌村",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.85579,
+            "longitude": 108.282093
+          },
+          "distanceMeters": 159.29663820513673,
+          "sdkDistanceMeters": 159.315
+        },
+        {
+          "id": "B0FFM1LHUH",
+          "name": "万事兴公寓",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.85671,
+            "longitude": 108.282319
+          },
+          "distanceMeters": 128.8496837337696,
+          "sdkDistanceMeters": 128.838
+        },
+        {
+          "id": "B0FFG4W01A",
+          "name": "南宁市欢廷幼儿园",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856829,
+            "longitude": 108.283156
+          },
+          "distanceMeters": 213.40284420956422,
+          "sdkDistanceMeters": 213.416
+        },
+        {
+          "id": "B0FFKHCOSO",
+          "name": "南宁舒森雅公寓(广西大学店)",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.855959,
+            "longitude": 108.281877
+          },
+          "distanceMeters": 130.67072033323018,
+          "sdkDistanceMeters": 130.691
+        },
+        {
+          "id": "B0HRLX4XO4",
+          "name": "广西南宁市万家宝国学幼儿园",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.857625,
+            "longitude": 108.282075
+          },
+          "distanceMeters": 132.4332069264027,
+          "sdkDistanceMeters": 132.421
+        },
+        {
+          "id": "B0I32YKT2M",
+          "name": "栖花里.鹧鸪旗舰店",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856449,
+            "longitude": 108.281183
+          },
+          "distanceMeters": 48.32500379664619,
+          "sdkDistanceMeters": 48.3554
+        },
+        {
+          "id": "B0FFK0MT7X",
+          "name": "三好公寓",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856284,
+            "longitude": 108.281832
+          },
+          "distanceMeters": 101.52443555297604,
+          "sdkDistanceMeters": 101.537
+        },
+        {
+          "id": "B0HALO6AL8",
+          "name": "海妍餐饮店",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.857365,
+            "longitude": 108.281307
+          },
+          "distanceMeters": 59.821894591843794,
+          "sdkDistanceMeters": 59.8028
+        },
+        {
+          "id": "B0FFJKHBJ5",
+          "name": "南宁市鹧鸪渌幼儿园",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856353,
+            "longitude": 108.283548
+          },
+          "distanceMeters": 259.99643556606424,
+          "sdkDistanceMeters": 260.008
+        },
+        {
+          "id": "B0JK0LOJQQ",
+          "name": "一品公寓",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856325,
+            "longitude": 108.282297
+          },
+          "distanceMeters": 139.3024121092923,
+          "sdkDistanceMeters": 139.303
+        },
+        {
+          "id": "B0HRXUTERP",
+          "name": "安家8号公寓",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856231,
+            "longitude": 108.282321
+          },
+          "distanceMeters": 146.3143988625817,
+          "sdkDistanceMeters": 146.326
+        },
+        {
+          "id": "B03030VB3S",
+          "name": "天隆盛超市(鹧鸪分店)",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856193,
+            "longitude": 108.281614
+          },
+          "distanceMeters": 93.59810263934848,
+          "sdkDistanceMeters": 93.5994
+        },
+        {
+          "id": "B0FFG6JCAA",
+          "name": "南宁品禾食品有限公司",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.856594,
+            "longitude": 108.283324
+          },
+          "distanceMeters": 232.62379694754267,
+          "sdkDistanceMeters": 232.618
+        },
+        {
+          "id": "B0MR7ZVM9T",
+          "name": "智汇充汽车充电站(青秀山西门充电站交流)",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.855374,
+            "longitude": 108.278968
+          },
+          "distanceMeters": 272.5700606456058,
+          "sdkDistanceMeters": 272.603
+        },
+        {
+          "id": "B0LKZCF29H",
+          "name": "新电途汽车充电站(青秀山西门充电站(交流))",
+          "typeCode": "",
+          "location": {
+            "latitude": 22.855374,
+            "longitude": 108.278968
+          },
+          "distanceMeters": 272.5700606456058,
+          "sdkDistanceMeters": 272.603
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:34.729364Z",
+      "platform": "ios",
+      "scenario": "default",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "keyword": "",
+        "city": "",
+        "types": "",
+        "pageSize": 25,
+        "pageNum": 1,
+        "sortRule": "distance",
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0KAA78QNJ",
+          "name": "高价回收废旧",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.856966,
+            "longitude": 108.281124
+          },
+          "distanceMeters": 11.670417077806412,
+          "sdkDistanceMeters": 11
+        },
+        {
+          "id": "B0KDUK2DUX",
+          "name": "鹧鸪村电动车维修店",
+          "typeCode": "071200",
+          "location": {
+            "latitude": 22.856939,
+            "longitude": 108.281224
+          },
+          "distanceMeters": 17.108396449020024,
+          "sdkDistanceMeters": 17
+        },
+        {
+          "id": "B0H0JSSUTU",
+          "name": "天天老友粉",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857098,
+            "longitude": 108.281094
+          },
+          "distanceMeters": 25.23867202232945,
+          "sdkDistanceMeters": 25
+        },
+        {
+          "id": "B0L3AZQVLE",
+          "name": "重庆豆花鱼·肥肠鱼",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857095,
+            "longitude": 108.281155
+          },
+          "distanceMeters": 26.17736233493444,
+          "sdkDistanceMeters": 26
+        },
+        {
+          "id": "B0MAFSTDKX",
+          "name": "小六乡村窑鸡",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.856599,
+            "longitude": 108.281108
+          },
+          "distanceMeters": 30.534353044436706,
+          "sdkDistanceMeters": 30
+        },
+        {
+          "id": "B0LUS55KRG",
+          "name": "南宁顺风搬家服务有限公司",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.857018,
+            "longitude": 108.281335
+          },
+          "distanceMeters": 31.31437905518267,
+          "sdkDistanceMeters": 31
+        },
+        {
+          "id": "B0MBG93LQM",
+          "name": "圆通快递",
+          "typeCode": "070500",
+          "location": {
+            "latitude": 22.856575,
+            "longitude": 108.281125
+          },
+          "distanceMeters": 33.415651835188456,
+          "sdkDistanceMeters": 33
+        },
+        {
+          "id": "B0MDT6B6YW",
+          "name": "激情椒麻鱼",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857177,
+            "longitude": 108.281096
+          },
+          "distanceMeters": 34.014223026066595,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0FFL4CD31",
+          "name": "苏氏耀昌族大院",
+          "typeCode": "120300",
+          "location": {
+            "latitude": 22.856619,
+            "longitude": 108.281268
+          },
+          "distanceMeters": 34.43886588123553,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0I3XH6IP4",
+          "name": "绿城燃气",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.856495,
+            "longitude": 108.281125
+          },
+          "distanceMeters": 42.22406131422397,
+          "sdkDistanceMeters": 42
+        },
+        {
+          "id": "B0MAZNAA9K",
+          "name": "便民家电维修部",
+          "typeCode": "071200",
+          "location": {
+            "latitude": 22.857156,
+            "longitude": 108.28138
+          },
+          "distanceMeters": 44.53175020650979,
+          "sdkDistanceMeters": 44
+        },
+        {
+          "id": "B0I2NZMY9C",
+          "name": "中国体育彩票(鹧鸪村店)",
+          "typeCode": "071800",
+          "location": {
+            "latitude": 22.857209,
+            "longitude": 108.28131
+          },
+          "distanceMeters": 44.628347903254806,
+          "sdkDistanceMeters": 44
+        },
+        {
+          "id": "B0L1YBD4TP",
+          "name": "浪豪美发造型",
+          "typeCode": "071100",
+          "location": {
+            "latitude": 22.857275,
+            "longitude": 108.281075
+          },
+          "distanceMeters": 44.835390793658824,
+          "sdkDistanceMeters": 44
+        },
+        {
+          "id": "B0HALO6AL8",
+          "name": "海妍餐饮店",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857365,
+            "longitude": 108.281307
+          },
+          "distanceMeters": 59.821894591843794,
+          "sdkDistanceMeters": 59
+        },
+        {
+          "id": "B0FFLEFK6W",
+          "name": "旺记脆皮烧鸭粉",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.856363,
+            "longitude": 108.281302
+          },
+          "distanceMeters": 61.2160742964159,
+          "sdkDistanceMeters": 61
+        },
+        {
+          "id": "B0MGXMXBEN",
+          "name": "食季饮食",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.856362,
+            "longitude": 108.281403
+          },
+          "distanceMeters": 65.96250932019731,
+          "sdkDistanceMeters": 66
+        },
+        {
+          "id": "B0HBYOJ6EH",
+          "name": "乡巴佬美食店(鹧鸪店)",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.85628,
+            "longitude": 108.281256
+          },
+          "distanceMeters": 68.40076876677497,
+          "sdkDistanceMeters": 68
+        },
+        {
+          "id": "B0L69AGYO3",
+          "name": "啊宁电动车维修",
+          "typeCode": "071200",
+          "location": {
+            "latitude": 22.856297,
+            "longitude": 108.281337
+          },
+          "distanceMeters": 69.37019234611132,
+          "sdkDistanceMeters": 69
+        },
+        {
+          "id": "B0LAD772KK",
+          "name": "羊养元水城羊肉粉",
+          "typeCode": "050000",
+          "location": {
+            "latitude": 22.857668,
+            "longitude": 108.281314
+          },
+          "distanceMeters": 91.89202463573784,
+          "sdkDistanceMeters": 91
+        },
+        {
+          "id": "B0FFK691J3",
+          "name": "福建云吞(18分店)",
+          "typeCode": "050300",
+          "location": {
+            "latitude": 22.856191,
+            "longitude": 108.281596
+          },
+          "distanceMeters": 92.70088759664414,
+          "sdkDistanceMeters": 92
+        },
+        {
+          "id": "B0MBX5Z5ZZ",
+          "name": "柳州螺蛳粉",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.856275,
+            "longitude": 108.281775
+          },
+          "distanceMeters": 97.80427824251804,
+          "sdkDistanceMeters": 97
+        },
+        {
+          "id": "B0KGOONHQ6",
+          "name": "格温美容美发工作室",
+          "typeCode": "071100",
+          "location": {
+            "latitude": 22.857631,
+            "longitude": 108.28158
+          },
+          "distanceMeters": 99.08076228400017,
+          "sdkDistanceMeters": 99
+        },
+        {
+          "id": "B0KGBC7JLW",
+          "name": "赖村长杀猪粉122分店",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857759,
+            "longitude": 108.281382
+          },
+          "distanceMeters": 103.5845744924702,
+          "sdkDistanceMeters": 103
+        },
+        {
+          "id": "B0GKU7JKMP",
+          "name": "灵马小王榨粉(鹧鸪村店)",
+          "typeCode": "050000",
+          "location": {
+            "latitude": 22.857548,
+            "longitude": 108.281788
+          },
+          "distanceMeters": 104.92347308878344,
+          "sdkDistanceMeters": 105
+        },
+        {
+          "id": "B0FFL29D6J",
+          "name": "中国福利彩票",
+          "typeCode": "071800",
+          "location": {
+            "latitude": 22.857855,
+            "longitude": 108.281301
+          },
+          "distanceMeters": 111.77932556373759,
+          "sdkDistanceMeters": 111
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:34.975709Z",
+      "platform": "ios",
+      "scenario": "explicit",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "keyword": "",
+        "city": "",
+        "types": "050000|060000|070000|080000|090000|100000|110000|120000|130000|140000|150000|160000|170000|190000",
+        "pageSize": 25,
+        "pageNum": 1,
+        "sortRule": "distance",
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0IASORQIR",
+          "name": "兔喜快递",
+          "typeCode": "060400",
+          "location": {
+            "latitude": 22.856825,
+            "longitude": 108.281064
+          },
+          "distanceMeters": 5.298659557405496,
+          "sdkDistanceMeters": 5
+        },
+        {
+          "id": "B0KAA78QNJ",
+          "name": "高价回收废旧",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.856966,
+            "longitude": 108.281124
+          },
+          "distanceMeters": 11.670417077806412,
+          "sdkDistanceMeters": 11
+        },
+        {
+          "id": "B0GRC1F1DQ",
+          "name": "天实超市",
+          "typeCode": "060200",
+          "location": {
+            "latitude": 22.856971,
+            "longitude": 108.281117
+          },
+          "distanceMeters": 11.886670340192484,
+          "sdkDistanceMeters": 11
+        },
+        {
+          "id": "B0L1FR0NMT",
+          "name": "华丽门窗店",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.85699,
+            "longitude": 108.281031
+          },
+          "distanceMeters": 13.857018124148347,
+          "sdkDistanceMeters": 13
+        },
+        {
+          "id": "B0MA3O1B7U",
+          "name": "纯米酒",
+          "typeCode": "061210",
+          "location": {
+            "latitude": 22.856766,
+            "longitude": 108.281153
+          },
+          "distanceMeters": 14.290509997120811,
+          "sdkDistanceMeters": 14
+        },
+        {
+          "id": "B0IRMRLL5L",
+          "name": "艺家门窗装饰",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.856999,
+            "longitude": 108.28101
+          },
+          "distanceMeters": 15.58306835072874,
+          "sdkDistanceMeters": 15
+        },
+        {
+          "id": "B0KDUK2DUX",
+          "name": "鹧鸪村电动车维修店",
+          "typeCode": "071200",
+          "location": {
+            "latitude": 22.856939,
+            "longitude": 108.281224
+          },
+          "distanceMeters": 17.108396449020024,
+          "sdkDistanceMeters": 17
+        },
+        {
+          "id": "B0FFH2W0BB",
+          "name": "阿聪便利店",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.856776,
+            "longitude": 108.281215
+          },
+          "distanceMeters": 17.96537114986501,
+          "sdkDistanceMeters": 17
+        },
+        {
+          "id": "B0LDCXXVK2",
+          "name": "何仕台球馆",
+          "typeCode": "080113",
+          "location": {
+            "latitude": 22.857046,
+            "longitude": 108.281019
+          },
+          "distanceMeters": 20.16903425828033,
+          "sdkDistanceMeters": 20
+        },
+        {
+          "id": "B0MAAY927N",
+          "name": "中之立土特产店",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.856988,
+            "longitude": 108.281234
+          },
+          "distanceMeters": 20.890499905733964,
+          "sdkDistanceMeters": 20
+        },
+        {
+          "id": "B0H0JSSUTU",
+          "name": "天天老友粉",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857098,
+            "longitude": 108.281094
+          },
+          "distanceMeters": 25.23867202232945,
+          "sdkDistanceMeters": 25
+        },
+        {
+          "id": "B0L3AZQVLE",
+          "name": "重庆豆花鱼·肥肠鱼",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857095,
+            "longitude": 108.281155
+          },
+          "distanceMeters": 26.17736233493444,
+          "sdkDistanceMeters": 26
+        },
+        {
+          "id": "B0MAFSTDKX",
+          "name": "小六乡村窑鸡",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.856599,
+            "longitude": 108.281108
+          },
+          "distanceMeters": 30.534353044436706,
+          "sdkDistanceMeters": 30
+        },
+        {
+          "id": "B0MAN9ROKY",
+          "name": "清泉酿酒坊",
+          "typeCode": "061210",
+          "location": {
+            "latitude": 22.856634,
+            "longitude": 108.281234
+          },
+          "distanceMeters": 31.121482126752852,
+          "sdkDistanceMeters": 31
+        },
+        {
+          "id": "B0LUS55KRG",
+          "name": "南宁顺风搬家服务有限公司",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.857018,
+            "longitude": 108.281335
+          },
+          "distanceMeters": 31.31437905518267,
+          "sdkDistanceMeters": 31
+        },
+        {
+          "id": "B0MBG93LQM",
+          "name": "圆通快递",
+          "typeCode": "070500",
+          "location": {
+            "latitude": 22.856575,
+            "longitude": 108.281125
+          },
+          "distanceMeters": 33.415651835188456,
+          "sdkDistanceMeters": 33
+        },
+        {
+          "id": "B0MDT6B6YW",
+          "name": "激情椒麻鱼",
+          "typeCode": "050100",
+          "location": {
+            "latitude": 22.857177,
+            "longitude": 108.281096
+          },
+          "distanceMeters": 34.014223026066595,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0LUXLS2ZH",
+          "name": "万彩涂料",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.857177,
+            "longitude": 108.281096
+          },
+          "distanceMeters": 34.014223026066595,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0FFL4CD31",
+          "name": "苏氏耀昌族大院",
+          "typeCode": "120300",
+          "location": {
+            "latitude": 22.856619,
+            "longitude": 108.281268
+          },
+          "distanceMeters": 34.43886588123553,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0LRCNE0YP",
+          "name": "广东粤味肠粉坊",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.857213,
+            "longitude": 108.281147
+          },
+          "distanceMeters": 38.67529183330958,
+          "sdkDistanceMeters": 38
+        },
+        {
+          "id": "B0MD9AOPFF",
+          "name": "苗灵百草堂",
+          "typeCode": "090601",
+          "location": {
+            "latitude": 22.856563,
+            "longitude": 108.281268
+          },
+          "distanceMeters": 39.68466144590111,
+          "sdkDistanceMeters": 39
+        },
+        {
+          "id": "B0I3XH6IP4",
+          "name": "绿城燃气",
+          "typeCode": "070000",
+          "location": {
+            "latitude": 22.856495,
+            "longitude": 108.281125
+          },
+          "distanceMeters": 42.22406131422397,
+          "sdkDistanceMeters": 42
+        },
+        {
+          "id": "B0FFK9DLH0",
+          "name": "南宁市拐角便利店(秀厢大道店)",
+          "typeCode": "060200",
+          "location": {
+            "latitude": 22.856543,
+            "longitude": 108.281305
+          },
+          "distanceMeters": 43.56355504616252,
+          "sdkDistanceMeters": 43
+        },
+        {
+          "id": "B0MAZNAA9K",
+          "name": "便民家电维修部",
+          "typeCode": "071200",
+          "location": {
+            "latitude": 22.857156,
+            "longitude": 108.28138
+          },
+          "distanceMeters": 44.53175020650979,
+          "sdkDistanceMeters": 44
+        },
+        {
+          "id": "B0I2NZMY9C",
+          "name": "中国体育彩票(鹧鸪村店)",
+          "typeCode": "071800",
+          "location": {
+            "latitude": 22.857209,
+            "longitude": 108.28131
+          },
+          "distanceMeters": 44.628347903254806,
+          "sdkDistanceMeters": 44
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:35.185923Z",
+      "platform": "ios",
+      "scenario": "keyword",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "keyword": "兔喜",
+        "city": "",
+        "types": "",
+        "pageSize": 25,
+        "pageNum": 1,
+        "sortRule": "distance",
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0IASORQIR",
+          "name": "兔喜快递",
+          "typeCode": "060400",
+          "location": {
+            "latitude": 22.856825,
+            "longitude": 108.281064
+          },
+          "distanceMeters": 5.298659557405496,
+          "sdkDistanceMeters": 5
+        },
+        {
+          "id": "B0MABCT6BZ",
+          "name": "兔喜驿站",
+          "typeCode": "100200",
+          "location": {
+            "latitude": 22.857375,
+            "longitude": 108.283475
+          },
+          "distanceMeters": 252.3178293701541,
+          "sdkDistanceMeters": 252
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:35.838934Z",
+      "platform": "ios",
+      "scenario": "shopping-page-1",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "keyword": "",
+        "city": "",
+        "types": "060000",
+        "pageSize": 5,
+        "pageNum": 1,
+        "sortRule": "distance",
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0IASORQIR",
+          "name": "兔喜快递",
+          "typeCode": "060400",
+          "location": {
+            "latitude": 22.856825,
+            "longitude": 108.281064
+          },
+          "distanceMeters": 5.298659557405496,
+          "sdkDistanceMeters": 5
+        },
+        {
+          "id": "B0GRC1F1DQ",
+          "name": "天实超市",
+          "typeCode": "060200",
+          "location": {
+            "latitude": 22.856971,
+            "longitude": 108.281117
+          },
+          "distanceMeters": 11.886670340192484,
+          "sdkDistanceMeters": 11
+        },
+        {
+          "id": "B0L1FR0NMT",
+          "name": "华丽门窗店",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.85699,
+            "longitude": 108.281031
+          },
+          "distanceMeters": 13.857018124148347,
+          "sdkDistanceMeters": 13
+        },
+        {
+          "id": "B0MA3O1B7U",
+          "name": "纯米酒",
+          "typeCode": "061210",
+          "location": {
+            "latitude": 22.856766,
+            "longitude": 108.281153
+          },
+          "distanceMeters": 14.290509997120811,
+          "sdkDistanceMeters": 14
+        },
+        {
+          "id": "B0IRMRLL5L",
+          "name": "艺家门窗装饰",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.856999,
+            "longitude": 108.28101
+          },
+          "distanceMeters": 15.58306835072874,
+          "sdkDistanceMeters": 15
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:35.840836Z",
+      "platform": "ios",
+      "scenario": "shopping-page-2",
+      "query": {
+        "latitude": 22.85687178770656,
+        "longitude": 108.28107380400866,
+        "radius": 300,
+        "keyword": "",
+        "city": "",
+        "types": "060000",
+        "pageSize": 5,
+        "pageNum": 2,
+        "sortRule": "distance",
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0FFH2W0BB",
+          "name": "阿聪便利店",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.856776,
+            "longitude": 108.281215
+          },
+          "distanceMeters": 17.96537114986501,
+          "sdkDistanceMeters": 17
+        },
+        {
+          "id": "B0MAAY927N",
+          "name": "中之立土特产店",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.856988,
+            "longitude": 108.281234
+          },
+          "distanceMeters": 20.890499905733964,
+          "sdkDistanceMeters": 20
+        },
+        {
+          "id": "B0MAN9ROKY",
+          "name": "清泉酿酒坊",
+          "typeCode": "061210",
+          "location": {
+            "latitude": 22.856634,
+            "longitude": 108.281234
+          },
+          "distanceMeters": 31.121482126752852,
+          "sdkDistanceMeters": 31
+        },
+        {
+          "id": "B0LUXLS2ZH",
+          "name": "万彩涂料",
+          "typeCode": "060603",
+          "location": {
+            "latitude": 22.857177,
+            "longitude": 108.281096
+          },
+          "distanceMeters": 34.014223026066595,
+          "sdkDistanceMeters": 34
+        },
+        {
+          "id": "B0LRCNE0YP",
+          "name": "广东粤味肠粉坊",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.857213,
+            "longitude": 108.281147
+          },
+          "distanceMeters": 38.67529183330958,
+          "sdkDistanceMeters": 38
+        }
+      ]
+    },
+    {
+      "time": "2026-09-20T20:35:36.127668Z",
+      "platform": "ios",
+      "scenario": "concurrent-keyword",
+      "query": {
+        "keyword": "兔喜",
+        "city": "南宁",
+        "types": "",
+        "pageSize": 20,
+        "pageNum": 1,
+        "timeoutMs": 10000,
+        "coordinateType": "gcj02"
+      },
+      "pois": [
+        {
+          "id": "B0LKH1R768",
+          "name": "兔喜生活(盘岭路四巷店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.77322,
+            "longitude": 108.317992
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0JD26K0H0",
+          "name": "兔喜生活(东葛路店)",
+          "typeCode": "061200",
+          "location": {
+            "latitude": 22.821519,
+            "longitude": 108.343992
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0J1ZABTMX",
+          "name": "兔喜生活(金禾湾西区店)",
+          "typeCode": "070500",
+          "location": {
+            "latitude": 22.854425,
+            "longitude": 108.355725
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0LD24GNXR",
+          "name": "兔喜生活(伍壹大道店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.816043,
+            "longitude": 108.259655
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0JGTSUNTL",
+          "name": "兔喜生活(兴东路店)",
+          "typeCode": "061200",
+          "location": {
+            "latitude": 22.851516,
+            "longitude": 108.351247
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0KR69XCQ8",
+          "name": "兔喜生活店(心圩路店)",
+          "typeCode": "061200",
+          "location": {
+            "latitude": 22.861425,
+            "longitude": 108.268375
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0M6LH53PD",
+          "name": "兔喜生活快递自助柜",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.811125,
+            "longitude": 108.353475
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0I2HU7B8T",
+          "name": "兔喜生活(南宁江南白沙南一里店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.788478,
+            "longitude": 108.341628
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0KGTUA5VY",
+          "name": "兔喜生活(翠湖新城店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.807521,
+            "longitude": 108.263233
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0LRBRNR1E",
+          "name": "兔喜生活(安吉大道店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.861261,
+            "longitude": 108.300757
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0JDV5R9CP",
+          "name": "兔喜快递超市(云星广东商城店)",
+          "typeCode": "050000",
+          "location": {
+            "latitude": 22.853475,
+            "longitude": 108.321625
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0KR5UMHHY",
+          "name": "兔喜生活(先锋街东二里店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.759619,
+            "longitude": 108.320501
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0L101DTU0",
+          "name": "兔喜生活(乐业路店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.809655,
+            "longitude": 108.441713
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0L6B9VBYD",
+          "name": "兔喜生活(南宁兴宁恒力城店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.865757,
+            "longitude": 108.398509
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0JDA5Y11L",
+          "name": "兔喜生活(瀚林御景店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.826898,
+            "longitude": 108.29533
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0IA3XJFBE",
+          "name": "兔喜生活(南宁西乡塘安吉华都店)",
+          "typeCode": "070500",
+          "location": {
+            "latitude": 22.859496,
+            "longitude": 108.29771
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0H2H1LO24",
+          "name": "兔喜生活(恒大名都店)",
+          "typeCode": "060200",
+          "location": {
+            "latitude": 22.762633,
+            "longitude": 108.320992
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0KRNZH65A",
+          "name": "兔喜生活(安吉大道店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.87025,
+            "longitude": 108.30075
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0KKVMYXET",
+          "name": "兔喜生活(银象路店)",
+          "typeCode": "060000",
+          "location": {
+            "latitude": 22.754825,
+            "longitude": 108.319775
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        },
+        {
+          "id": "B0LAZ109H4",
+          "name": "兔喜生活(南宁良庆隐栖苑店)",
+          "typeCode": "070500",
+          "location": {
+            "latitude": 22.741575,
+            "longitude": 108.395175
+          },
+          "distanceMeters": null,
+          "sdkDistanceMeters": null
+        }
+      ]
+    }
+  ],
+  "errors": {
+    "privacyRefused": {
+      "code": "privacy_not_agreed"
+    },
+    "invalidKey": {
+      "code": "sdk_error",
+      "nativeCode": 1002
+    }
+  },
+  "environment": {
+    "freshInstallNetworkPermission": "Earlier runs failed with nativeCode 1806 before network authorization. Online and invalid-Key tests passed after explicit network preflight and authorization.",
+    "xctest": "Test bundle compiled; execution rejected by Xcode 26.5 on iOS 16.5.1 with Logic Testing Unavailable. Not counted as passed."
+  }
+}

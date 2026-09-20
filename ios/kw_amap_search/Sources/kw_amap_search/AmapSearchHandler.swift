@@ -30,6 +30,10 @@ final class AmapSearchHandler: NSObject, KwAmapSearchHandling, AMapSearchDelegat
     }
     privacyContains = arguments["hasContains"] as? Bool ?? false
     privacyShown = arguments["hasShow"] as? Bool ?? false
+    AMapSearchAPI.updatePrivacyShow(
+      privacyShown ? .didShow : .notShow,
+      privacyInfo: privacyContains ? .didContain : .notContain
+    )
     result(nil)
   }
 
@@ -40,6 +44,7 @@ final class AmapSearchHandler: NSObject, KwAmapSearchHandling, AMapSearchDelegat
     }
 
     privacyAgreed = arguments["hasAgree"] as? Bool ?? false
+    AMapSearchAPI.updatePrivacyAgree(privacyAgreed ? .didAgree : .notAgree)
     AMapServices.shared().securityAgree = privacyAgreed
     AMapServices.shared().analysisAgree = privacyAgreed
     result(nil)
@@ -244,8 +249,18 @@ final class AmapSearchHandler: NSObject, KwAmapSearchHandling, AMapSearchDelegat
       return nil
     }
     if search == nil {
-      search = AMapSearchAPI()
-      search?.delegate = self
+      guard let initialized = AMapSearchAPI() else {
+        result(
+          FlutterError(
+            code: "not_initialized",
+            message: "AMap search SDK initialization failed.",
+            details: ["platform": "ios"]
+          )
+        )
+        return nil
+      }
+      initialized.delegate = self
+      search = initialized
     }
     return search
   }
