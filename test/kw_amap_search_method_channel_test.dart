@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kw_amap_search/kw_amap_search_method_channel.dart';
@@ -21,7 +23,18 @@ void main() {
           }
           if (methodCall.method == 'searchKeyword' ||
               methodCall.method == 'searchAround') {
-            return <Object?>[_samplePoiJson()];
+            return <Object?>[
+              {
+                ..._samplePoiJson(),
+                if (methodCall.method == 'searchKeyword') 'distance': null,
+              },
+            ];
+          }
+          if (methodCall.method == 'reverseGeocode') {
+            return _sampleRegeocodeJson();
+          }
+          if (methodCall.method == 'cancelRequest') {
+            return true;
           }
           if (methodCall.method == 'failingSearch') {
             throw PlatformException(
@@ -75,15 +88,19 @@ void main() {
     );
 
     expect(calls.single.method, 'searchKeyword');
-    expect(calls.single.arguments, <String, Object?>{
-      'keyword': 'coffee',
-      'city': 'Shanghai',
-      'types': '050000',
-      'pageSize': 10,
-      'pageNum': 2,
-    });
+    final arguments = calls.single.arguments as Map<Object?, Object?>;
+    expect(arguments['keyword'], 'coffee');
+    expect(arguments['city'], 'Shanghai');
+    expect(arguments['types'], '050000');
+    expect(arguments['pageSize'], 10);
+    expect(arguments['pageNum'], 2);
+    expect(arguments['coordinateType'], 'gcj02');
+    expect(arguments['requestId'], isA<String>());
+    expect(arguments['timeoutMs'], 10000);
     expect(results.single.name, 'Sample POI');
-    expect(results.single.location.longitude, 121.4737);
+    expect(results.single.location!.longitude, 121.4737);
+    expect(results.single.distanceMeters, isNull);
+    expect(results.single.sdkDistanceMeters, isNull);
   });
 
   test(
@@ -98,24 +115,100 @@ void main() {
           types: '050000',
           pageSize: 12,
           pageNum: 3,
+          sortRule: AmapAroundSortRule.comprehensive,
         ),
       );
 
       expect(calls.single.method, 'searchAround');
-      expect(calls.single.arguments, <String, Object?>{
-        'latitude': 31.2304,
-        'longitude': 121.4737,
-        'radius': 1500,
-        'keyword': 'tea',
-        'city': 'Shanghai',
-        'types': '050000',
-        'pageSize': 12,
-        'pageNum': 3,
-      });
+      final arguments = calls.single.arguments as Map<Object?, Object?>;
+      expect(arguments['latitude'], 31.2304);
+      expect(arguments['longitude'], 121.4737);
+      expect(arguments['radius'], 1500);
+      expect(arguments['keyword'], 'tea');
+      expect(arguments['city'], 'Shanghai');
+      expect(arguments['types'], '050000');
+      expect(arguments['pageSize'], 12);
+      expect(arguments['pageNum'], 3);
+      expect(arguments['sortRule'], 'comprehensive');
+      expect(arguments['coordinateType'], 'gcj02');
       expect(results.single.id, 'B001');
       expect(results.single.photos.single.title, 'front');
+      expect(results.single.distanceMeters, closeTo(0, 1));
     },
   );
+
+  test(
+    'reverseGeocode invokes native method and parses structured result',
+    () async {
+      final result = await platform.reverseGeocode(
+        const AmapReverseGeocodeQuery(
+          point: AmapLatLng(latitude: 31.2304, longitude: 121.4737),
+          radius: 300,
+        ),
+        options: const AmapSearchRequestOptions(requestId: 'reverse-1'),
+      );
+
+      expect(calls.single.method, 'reverseGeocode');
+      final arguments = calls.single.arguments as Map<Object?, Object?>;
+      expect(arguments['requestId'], 'reverse-1');
+      expect(arguments['timeoutMs'], 10000);
+      expect(arguments['coordinateType'], 'gcj02');
+      expect(arguments['includeExtensions'], isTrue);
+      expect(result.formattedAddress, 'Sample formatted address');
+      expect(result.pois.single.id, 'B001');
+      expect(result.aois.single.containsPoint, isNull);
+    },
+  );
+
+  test('cancelRequest invokes native method', () async {
+    expect(await platform.cancelRequest('request-1'), isTrue);
+    expect(calls.single.method, 'cancelRequest');
+    expect(calls.single.arguments, <String, Object?>{'requestId': 'request-1'});
+  });
+
+  for (final cancelFails in [false, true]) {
+    test(
+      'timeout is bounded when cancellation ${cancelFails ? 'fails' : 'hangs'}',
+      () async {
+        final pendingSearch = Completer<Object?>();
+        final pendingCancel = Completer<Object?>();
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (call) async {
+              calls.add(call);
+              if (call.method == 'cancelRequest') {
+                if (cancelFails) throw PlatformException(code: 'channel-error');
+                return pendingCancel.future;
+              }
+              return pendingSearch.future;
+            });
+        try {
+          await expectLater(
+            platform
+                .searchByKeyword(
+                  const AmapKeywordSearchQuery(keyword: 'coffee'),
+                  options: const AmapSearchRequestOptions(
+                    requestId: 'timeout-test',
+                    timeout: Duration(milliseconds: 10),
+                  ),
+                )
+                .timeout(const Duration(seconds: 1)),
+            throwsA(
+              isA<AmapSearchException>().having(
+                (error) => error.code,
+                'code',
+                'timeout',
+              ),
+            ),
+          );
+          expect(calls.last.method, 'cancelRequest');
+          expect(calls.last.arguments['requestId'], 'timeout-test');
+        } finally {
+          pendingCancel.complete(false);
+          pendingSearch.complete(<Object?>[]);
+        }
+      },
+    );
+  }
 
   test('converts PlatformException into AmapSearchException', () async {
     final testPlatform = _FailingMethodChannelKwAmapSearch();
@@ -131,6 +224,32 @@ void main() {
       ),
     );
   });
+}
+
+Map<String, Object?> _sampleRegeocodeJson() {
+  return <String, Object?>{
+    'requestedLocation': <String, Object?>{
+      'latitude': 31.2304,
+      'longitude': 121.4737,
+    },
+    'coordinateType': 'gcj02',
+    'formattedAddress': 'Sample formatted address',
+    'addressComponent': <String, Object?>{
+      'province': '上海市',
+      'district': '黄浦区',
+      'streetNumber': <String, Object?>{
+        'street': '南京东路',
+        'number': '1号',
+        'sdkDistanceMeters': 12,
+      },
+    },
+    'pois': <Object?>[_samplePoiJson()],
+    'aois': <Object?>[
+      <String, Object?>{'id': 'AOI1', 'name': 'Sample AOI'},
+    ],
+    'roads': <Object?>[],
+    'roadIntersections': <Object?>[],
+  };
 }
 
 class _FailingMethodChannelKwAmapSearch extends MethodChannelKwAmapSearch {

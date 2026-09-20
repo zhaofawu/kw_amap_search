@@ -23,11 +23,20 @@ class _MyAppState extends State<MyApp> {
   final _latitudeController = TextEditingController(text: '31.2304');
   final _longitudeController = TextEditingController(text: '121.4737');
   final _radiusController = TextEditingController(text: '1000');
+  final _typesController = TextEditingController(
+    text:
+        '050000|060000|070000|080000|090000|100000|110000|120000|130000|140000|150000|160000|170000|190000',
+  );
 
   String _platformVersion = 'Unknown';
   String _status = 'Ready';
-  bool _loading = false;
+  bool _privacyAgreed = false;
+  bool get _loading => _activeRequestIds.isNotEmpty;
+  int _requestSeed = 0;
+  final _activeRequestIds = <String>{};
+  final _requestStatuses = <String, String>{};
   List<SearchResultItem> _results = const <SearchResultItem>[];
+  AmapRegeocodeResult? _reverseResult;
 
   @override
   void initState() {
@@ -44,6 +53,11 @@ class _MyAppState extends State<MyApp> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     _radiusController.dispose();
+    _typesController.dispose();
+    for (final requestId in _activeRequestIds) {
+      KwAmapSearch.cancelRequest(requestId).ignore();
+    }
+    _activeRequestIds.clear();
     super.dispose();
   }
 
@@ -63,6 +77,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _prepareAmapSdk() async {
+    if (!_privacyAgreed) {
+      throw const AmapSearchException(
+        code: 'privacy_not_agreed',
+        message: 'Privacy consent is required.',
+      );
+    }
     // AMap requires the privacy methods to be called before SDK APIs are used.
     // Keeping that sequence in one helper makes both search buttons behave the
     // same on Android and iOS.
@@ -75,70 +95,172 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _searchByKeyword() async {
-    await _runSearch(() {
+    final requestId = _nextRequestId('keyword');
+    final query = AmapKeywordSearchQuery(
+      keyword: _keywordController.text.trim(),
+      city: _cityController.text.trim(),
+      types: _typesController.text.trim(),
+    );
+    await _runSearch(requestId, () {
       return KwAmapSearch.searchByKeyword(
-        AmapKeywordSearchQuery(
-          keyword: _keywordController.text.trim(),
-          city: _cityController.text.trim(),
-        ),
+        query,
+        options: AmapSearchRequestOptions(requestId: requestId),
       );
     });
   }
 
   Future<void> _searchNearby() async {
-    final latitude = double.tryParse(_latitudeController.text.trim()) ?? 0;
-    final longitude = double.tryParse(_longitudeController.text.trim()) ?? 0;
+    final point = _pointFromInput();
+    if (point == null) {
+      _setSearchError('Invalid coordinate');
+      return;
+    }
     final radius = int.tryParse(_radiusController.text.trim()) ?? 1000;
+    final requestId = _nextRequestId('nearby');
+    final query = AmapAroundSearchQuery(
+      center: point,
+      radius: radius,
+      keyword: _keywordController.text.trim(),
+      city: _cityController.text.trim(),
+      types: _typesController.text.trim(),
+      sortRule: AmapAroundSortRule.distance,
+    );
 
-    await _runSearch(() {
+    await _runSearch(requestId, () {
       return KwAmapSearch.searchNearby(
-        AmapAroundSearchQuery(
-          center: AmapLatLng(latitude: latitude, longitude: longitude),
-          radius: radius,
-          keyword: _keywordController.text.trim(),
-          city: _cityController.text.trim(),
-        ),
+        query,
+        options: AmapSearchRequestOptions(requestId: requestId),
       );
     });
   }
 
-  Future<void> _runSearch(
-    Future<List<SearchResultItem>> Function() search,
-  ) async {
+  Future<void> _reverseGeocode() async {
+    final point = _pointFromInput();
+    if (point == null) {
+      _setSearchError('Invalid coordinate');
+      return;
+    }
+    final radius = int.tryParse(_radiusController.text.trim()) ?? 300;
+    final requestId = _nextRequestId('reverse');
+    _activeRequestIds.add(requestId);
     setState(() {
-      _loading = true;
-      _status = 'Searching...';
+      _requestStatuses[requestId] = 'pending';
+      _status = 'Reverse geocoding... $requestId';
+      _reverseResult = null;
     });
 
     try {
       await _prepareAmapSdk();
-      final results = await search();
+      if (!mounted || !_activeRequestIds.contains(requestId)) return;
+      final reverse = await KwAmapSearch.reverseGeocode(
+        AmapReverseGeocodeQuery(point: point, radius: radius),
+        options: AmapSearchRequestOptions(requestId: requestId),
+      );
       if (!mounted) return;
       setState(() {
-        _results = results;
-        _status = 'Found ${results.length} POI(s)';
+        _reverseResult = reverse;
+        _requestStatuses[requestId] = 'success';
+        _status = 'Reverse OK: ${reverse.pois.length} POI(s)';
       });
     } on AmapSearchException catch (error) {
-      _setSearchError('${error.code}: ${error.message ?? error.details ?? ''}');
-    } on PlatformException catch (error) {
-      _setSearchError('${error.code}: ${error.message ?? ''}');
+      _setSearchError(
+        '${error.code}: ${error.message ?? error.details ?? ''}',
+        requestId: requestId,
+      );
     } on Object catch (error) {
-      _setSearchError(error.toString());
+      _setSearchError(error.toString(), requestId: requestId);
     } finally {
+      _activeRequestIds.remove(requestId);
       if (mounted) {
-        setState(() {
-          _loading = false;
-        });
+        setState(() {});
       }
     }
   }
 
-  void _setSearchError(String message) {
+  Future<void> _runReverseAndNearby() async {
+    await Future.wait([_reverseGeocode(), _searchNearby()]);
+  }
+
+  Future<void> _cancelActiveRequests() async {
+    await Future.wait(_activeRequestIds.toList().map(_cancelRequest));
+  }
+
+  Future<void> _cancelRequest(String requestId) async {
+    try {
+      final cancelled = await KwAmapSearch.cancelRequest(requestId);
+      if (!mounted) return;
+      // An ID can still be waiting for SDK setup, before native registration.
+      if (cancelled || _activeRequestIds.contains(requestId)) {
+        setState(() {
+          _activeRequestIds.remove(requestId);
+          _requestStatuses[requestId] = 'cancelled';
+        });
+      }
+    } on Object catch (error) {
+      _setSearchError(error.toString(), requestId: requestId);
+    }
+  }
+
+  Future<void> _runSearch(
+    String requestId,
+    Future<List<SearchResultItem>> Function() search,
+  ) async {
+    _activeRequestIds.add(requestId);
+    setState(() {
+      _requestStatuses[requestId] = 'pending';
+      _status = 'Searching... $requestId';
+      _results = const <SearchResultItem>[];
+    });
+
+    try {
+      await _prepareAmapSdk();
+      if (!mounted || !_activeRequestIds.contains(requestId)) return;
+      final results = await search();
+      if (!mounted) return;
+      setState(() {
+        _results = results;
+        _requestStatuses[requestId] = 'success';
+        _status = 'Found ${results.length} POI(s)';
+      });
+    } on AmapSearchException catch (error) {
+      _setSearchError(
+        '${error.code}: ${error.message ?? error.details ?? ''}',
+        requestId: requestId,
+      );
+    } on PlatformException catch (error) {
+      _setSearchError(
+        '${error.code}: ${error.message ?? ''}',
+        requestId: requestId,
+      );
+    } on Object catch (error) {
+      _setSearchError(error.toString(), requestId: requestId);
+    } finally {
+      _activeRequestIds.remove(requestId);
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+  void _setSearchError(String message, {String? requestId}) {
     if (!mounted) return;
     setState(() {
-      _results = const <SearchResultItem>[];
+      if (requestId != null) _requestStatuses[requestId] = message;
       _status = message;
     });
+  }
+
+  AmapLatLng? _pointFromInput() {
+    final latitude = double.tryParse(_latitudeController.text.trim());
+    final longitude = double.tryParse(_longitudeController.text.trim());
+    if (latitude == null || longitude == null) return null;
+    return AmapLatLng(latitude: latitude, longitude: longitude);
+  }
+
+  String _nextRequestId(String operation) {
+    if (_activeRequestIds.isEmpty) _requestStatuses.clear();
+    _requestSeed += 1;
+    return 'example-$_requestSeed-$operation';
   }
 
   @override
@@ -173,6 +295,15 @@ class _MyAppState extends State<MyApp> {
                       border: OutlineInputBorder(),
                       labelText: 'iOS Key',
                     ),
+                  ),
+                  CheckboxListTile(
+                    title: const Text('同意高德 SDK 隐私政策和个人信息处理'),
+                    value: _privacyAgreed,
+                    onChanged: _loading
+                        ? null
+                        : (value) {
+                            setState(() => _privacyAgreed = value ?? false);
+                          },
                   ),
                 ],
               ),
@@ -231,6 +362,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  TextField(
+                    controller: _typesController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Types',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -245,17 +384,80 @@ class _MyAppState extends State<MyApp> {
                         icon: const Icon(Icons.my_location),
                         label: const Text('Nearby'),
                       ),
+                      OutlinedButton.icon(
+                        onPressed: _loading ? null : _reverseGeocode,
+                        icon: const Icon(Icons.place),
+                        label: const Text('Reverse'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: _loading ? null : _runReverseAndNearby,
+                        icon: const Icon(Icons.sync),
+                        label: const Text('Both'),
+                      ),
+                      TextButton.icon(
+                        onPressed: _activeRequestIds.isEmpty
+                            ? null
+                            : _cancelActiveRequests,
+                        icon: const Icon(Icons.cancel),
+                        label: const Text('Cancel all'),
+                      ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               _StatusLine(loading: _loading, status: _status),
+              ..._requestStatuses.entries.map(
+                (entry) => ListTile(
+                  title: Text(entry.key),
+                  subtitle: Text(entry.value),
+                  trailing: IconButton(
+                    tooltip: 'Cancel ${entry.key}',
+                    onPressed: _activeRequestIds.contains(entry.key)
+                        ? () => _cancelRequest(entry.key)
+                        : null,
+                    icon: const Icon(Icons.cancel),
+                  ),
+                ),
+              ),
+              if (_reverseResult != null) ...<Widget>[
+                const SizedBox(height: 12),
+                _ReverseTile(_reverseResult!),
+                ..._reverseResult!.pois.map(_PoiTile.new),
+              ],
               const SizedBox(height: 12),
               ..._results.map(_PoiTile.new),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ReverseTile extends StatelessWidget {
+  const _ReverseTile(this.result);
+
+  final AmapRegeocodeResult result;
+
+  @override
+  Widget build(BuildContext context) {
+    final address = result.addressComponent;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(result.formattedAddress),
+      subtitle: Text(
+        [
+          '${result.requestedLocation.latitude}, ${result.requestedLocation.longitude}',
+          if (address != null)
+            [
+              address.province,
+              address.city,
+              address.district,
+              address.township,
+            ].where((text) => text.isNotEmpty).join(' '),
+          'POI ${result.pois.length} / AOI ${result.aois.length} / Road ${result.roads.length}',
+        ].where((text) => text.isNotEmpty).join('\n'),
       ),
     );
   }
@@ -310,17 +512,22 @@ class _PoiTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final location = item.location;
+    final distance = item.distanceMeters ?? item.sdkDistanceMeters;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(item.name),
       subtitle: Text(
         [
           item.address,
+          'ID: ${item.id} / Type: ${item.typeCode} ${item.typeDescription}',
           if (item.tel.isNotEmpty) item.tel,
-          '${item.location.latitude}, ${item.location.longitude}',
+          location == null
+              ? 'Coordinate: null'
+              : '${location.latitude}, ${location.longitude}',
         ].where((text) => text.isNotEmpty).join('\n'),
       ),
-      trailing: item.distance > 0 ? Text('${item.distance} m') : null,
+      trailing: Text(distance == null ? 'null' : '${distance.round()} m'),
     );
   }
 }

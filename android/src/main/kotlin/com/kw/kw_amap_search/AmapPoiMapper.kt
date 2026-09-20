@@ -11,11 +11,12 @@ import com.amap.api.services.core.PoiItem
  * of this payload, while old apps can still parse the legacy keys.
  */
 internal object AmapPoiMapper {
-    fun toChannelList(poiItems: List<PoiItem>): List<Map<String, Any?>> {
-        return poiItems.map(::toChannelMap)
+    fun toChannelList(poiItems: List<PoiItem>, includeDistance: Boolean = true): List<Map<String, Any?>> {
+        return poiItems.map { toChannelMap(it, includeDistance) }
     }
 
-    private fun toChannelMap(poiItem: PoiItem): Map<String, Any?> {
+    private fun toChannelMap(poiItem: PoiItem, includeDistance: Boolean): Map<String, Any?> {
+        val distance = poiItem.distance.takeIf { includeDistance && it >= 0 }
         return mapOf(
             "adCode" to poiItem.adCode.orEmpty(),
             "adName" to poiItem.adName.orEmpty(),
@@ -28,7 +29,8 @@ internal object AmapPoiMapper {
             ),
             "businessArea" to poiItem.businessArea.orEmpty(),
             "direction" to poiItem.direction.orEmpty(),
-            "distance" to poiItem.distance,
+            "distance" to distance,
+            "sdkDistanceMeters" to distance?.toDouble(),
             "email" to poiItem.email.orEmpty(),
             "enter" to latLonPointMap(poiItem.enter),
             "exit" to latLonPointMap(poiItem.exit),
@@ -55,7 +57,8 @@ internal object AmapPoiMapper {
                     "title" to it.title.orEmpty(),
                     "snippet" to it.snippet.orEmpty(),
                     "subTypeDes" to it.subTypeDes.orEmpty(),
-                    "distance" to it.distance,
+                    "distance" to it.distance.takeIf { distance -> distance >= 0 },
+                    "sdkDistanceMeters" to it.distance.takeIf { distance -> distance >= 0 }?.toDouble(),
                     "poiId" to it.poiId.orEmpty(),
                     "subName" to it.subName.orEmpty(),
                     "subLatLonPoint" to latLonPointMap(it.latLonPoint)
@@ -69,10 +72,13 @@ internal object AmapPoiMapper {
         )
     }
 
-    private fun latLonPointMap(point: LatLonPoint?): Map<String, Double> {
+    internal fun latLonPointMap(point: LatLonPoint?): Map<String, Double>? {
+        if (point == null) {
+            return null
+        }
         return mapOf(
-            "latitude" to (point?.latitude ?: 0.0),
-            "longitude" to (point?.longitude ?: 0.0)
+            "latitude" to point.latitude,
+            "longitude" to point.longitude
         )
     }
 }

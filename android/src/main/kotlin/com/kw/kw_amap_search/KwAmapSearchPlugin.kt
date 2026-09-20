@@ -24,11 +24,14 @@ class KwAmapSearchPlugin : FlutterPlugin, MethodCallHandler {
             "updatePrivacyAgree" -> searchHandler.updatePrivacyAgree(call, result)
             "searchKeyword" -> searchHandler.searchKeyword(call, result)
             "searchAround" -> searchHandler.searchAround(call, result)
+            "reverseGeocode" -> searchHandler.reverseGeocode(call, result)
+            "cancelRequest" -> searchHandler.cancelRequest(call, result)
             else -> result.notImplemented()
         }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        searchHandler.dispose()
         channel.setMethodCallHandler(null)
     }
 }

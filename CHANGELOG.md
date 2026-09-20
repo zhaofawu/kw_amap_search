@@ -1,3 +1,20 @@
+## 0.1.0
+
+* Fixed late Android callbacks removing a newer request with a reused ID; release listeners and timers on completion.
+* Fixed Dart timeout cleanup blocking or masking the original timeout error.
+* Preserved POI distances through JSON round trips and normalized negative SDK distance sentinels to null.
+* Removed the incomplete Swift Package manifest and integrated the iOS example through CocoaPods with the actual AMap SDKs.
+* Added independent example request results, per-request cancellation, explicit privacy consent, and regression coverage.
+
+* Added reverse geocoding with structured address, POI, AOI, road, and road-intersection models.
+* Added `AmapSearchRequestOptions`, request IDs, default 10-second timeout, and `cancelRequest`.
+* Added `AmapAroundSortRule` and native distance-sort mapping for nearby search.
+* Changed POI coordinates and distance-like fields to nullable values instead of fake `(0,0)` / `0` defaults.
+* Added Dart-side straight-line `distanceMeters` and preserved SDK raw distance as `sdkDistanceMeters`.
+* Added validation for coordinates, radius, paging, keyword, and timeout; invalid input now throws `invalid_argument`.
+* Updated the example app to demonstrate keyword search, nearby search, reverse geocoding, concurrent requests, and cancellation.
+* Breaking change: callers must handle nullable POI coordinates and migrate business distance usage from `distance` to `distanceMeters`.
+
 ## 0.0.3
 
 * Changed the Android AMap Search SDK dependency to `compileOnly`; host apps now explicitly provide `com.amap.api:search`.

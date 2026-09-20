@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -18,6 +20,29 @@ class MethodChannelKwAmapSearch extends KwAmapSearchPlatform {
       return await methodChannel.invokeMethod<T>(method, arguments);
     } on PlatformException catch (error) {
       throw AmapSearchException.fromPlatformException(error);
+    }
+  }
+
+  Future<T?> _invokeRequest<T>(
+    String method,
+    Map<String, Object?> arguments,
+  ) async {
+    final requestId = arguments['requestId'] as String?;
+    final timeoutMs = arguments['timeoutMs'] as int?;
+    final call = invokeNative<T>(method, arguments);
+    if (requestId == null || timeoutMs == null) {
+      return call;
+    }
+    try {
+      return await call.timeout(Duration(milliseconds: timeoutMs));
+    } on TimeoutException {
+      // Cleanup must not block the timeout or replace its error.
+      cancelRequest(requestId).ignore();
+      throw AmapSearchException(
+        code: 'timeout',
+        message: 'AMap search request timed out.',
+        details: <String, Object?>{'requestId': requestId, 'operation': method},
+      );
     }
   }
 
@@ -52,23 +77,56 @@ class MethodChannelKwAmapSearch extends KwAmapSearchPlatform {
 
   @override
   Future<List<SearchResultItem>> searchByKeyword(
-    AmapKeywordSearchQuery query,
-  ) async {
-    final dataList = await invokeNative<List<dynamic>>(
+    AmapKeywordSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) async {
+    final dataList = await _invokeRequest<List<dynamic>>(
       'searchKeyword',
-      query.toMethodArguments(),
+      query.toMethodArguments(options: options),
     );
     return (dataList ?? <dynamic>[]).map(SearchResultItem.fromJson).toList();
   }
 
   @override
   Future<List<SearchResultItem>> searchNearby(
-    AmapAroundSearchQuery query,
-  ) async {
-    final dataList = await invokeNative<List<dynamic>>(
+    AmapAroundSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) async {
+    final dataList = await _invokeRequest<List<dynamic>>(
       'searchAround',
-      query.toMethodArguments(),
+      query.toMethodArguments(options: options),
     );
-    return (dataList ?? <dynamic>[]).map(SearchResultItem.fromJson).toList();
+    return (dataList ?? <dynamic>[])
+        .map(
+          (item) => SearchResultItem.fromJson(item, queryCenter: query.center),
+        )
+        .toList();
+  }
+
+  @override
+  Future<AmapRegeocodeResult> reverseGeocode(
+    AmapReverseGeocodeQuery query, {
+    AmapSearchRequestOptions? options,
+  }) async {
+    final data = await _invokeRequest<Map<dynamic, dynamic>>(
+      'reverseGeocode',
+      query.toMethodArguments(options: options),
+    );
+    return AmapRegeocodeResult.fromJson(data);
+  }
+
+  @override
+  Future<bool> cancelRequest(String requestId) async {
+    final trimmed = requestId.trim();
+    if (trimmed.isEmpty) {
+      throw const AmapSearchException(
+        code: 'invalid_argument',
+        message: 'requestId must not be empty.',
+      );
+    }
+    return await invokeNative<bool>('cancelRequest', <String, Object?>{
+          'requestId': trimmed,
+        }) ??
+        false;
   }
 }

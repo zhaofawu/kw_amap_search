@@ -4,14 +4,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'kw_amap_search'
-  s.version          = '0.0.1'
+  s.version          = '0.1.0'
   s.summary          = 'Flutter AMap POI search plugin for Android and iOS.'
   s.description      = <<-DESC
-Flutter plugin that wraps AMap POI keyword and nearby search with a stable
-method-channel schema for Android and iOS.
+Flutter plugin that wraps AMap POI keyword search, nearby search, and reverse
+geocoding with a stable method-channel schema for Android and iOS.
                        DESC
   s.homepage         = 'https://lbs.amap.com/'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = 'kw_amap_search'
   s.source           = { :path => '.' }
   s.source_files = 'kw_amap_search/Sources/kw_amap_search/**/*'
@@ -19,6 +19,7 @@ method-channel schema for Android and iOS.
   s.dependency 'AMapFoundation-NO-IDFA', '1.9.0'
   s.dependency 'AMapSearch-NO-IDFA', '9.8.0'
   s.platform = :ios, '13.0'
+  s.static_framework = true
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

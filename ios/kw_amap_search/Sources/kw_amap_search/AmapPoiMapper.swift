@@ -3,8 +3,8 @@ import AMapSearchKit
 import UIKit
 
 enum AmapPoiMapper {
-  static func toChannelList(_ pois: [AMapPOI]) -> [[String: Any]] {
-    pois.map(toChannelMap)
+  static func toChannelList(_ pois: [AMapPOI], includeDistance: Bool = true) -> [[String: Any?]] {
+    pois.map { toChannelMap($0, includeDistance: includeDistance) }
   }
 
   /// Returns the same payload shape as Android's mapper.
@@ -12,8 +12,9 @@ enum AmapPoiMapper {
   /// AMap's iOS SDK uses names like `uid`, `name`, `address`, and `typecode`;
   /// Android uses `poiId`, `title`, `snippet`, and `typeCode`. The Flutter
   /// channel keeps the Android-origin schema so Dart receives one stable shape.
-  private static func toChannelMap(_ poi: AMapPOI) -> [String: Any] {
-    [
+  private static func toChannelMap(_ poi: AMapPOI, includeDistance: Bool) -> [String: Any?] {
+    let distance = includeDistance && poi.distance >= 0 ? Double(poi.distance) : nil
+    return [
       "adCode": string(poi.adcode),
       "adName": string(poi.district),
       "cityName": string(poi.city),
@@ -25,7 +26,8 @@ enum AmapPoiMapper {
       ],
       "businessArea": string(poi.businessData?.businessArea ?? poi.businessArea),
       "direction": string(poi.direction),
-      "distance": Int(poi.distance),
+      "distance": distance,
+      "sdkDistanceMeters": distance,
       "email": string(poi.email),
       "enter": pointMap(poi.enterLocation),
       "exit": pointMap(poi.exitLocation),
@@ -51,12 +53,13 @@ enum AmapPoiMapper {
       "provinceName": string(poi.province),
       "shopID": string(poi.shopID),
       "snippet": string(poi.address),
-      "subPois": (poi.subPOIs ?? []).map { child in
+      "subPois": (poi.subPOIs ?? []).map { child -> [String: Any?] in
         [
           "title": string(child.name),
           "snippet": string(child.address),
           "subTypeDes": string(child.subtype),
-          "distance": child.distance,
+          "distance": child.distance >= 0 ? Double(child.distance) : nil,
+          "sdkDistanceMeters": child.distance >= 0 ? Double(child.distance) : nil,
           "poiId": string(child.uid),
           "subName": string(child.sname),
           "subLatLonPoint": pointMap(child.location)
@@ -70,10 +73,13 @@ enum AmapPoiMapper {
     ]
   }
 
-  private static func pointMap(_ point: AMapGeoPoint?) -> [String: Double] {
-    [
-      "latitude": Double(point?.latitude ?? 0),
-      "longitude": Double(point?.longitude ?? 0)
+  static func pointMap(_ point: AMapGeoPoint?) -> [String: Double]? {
+    guard let point = point else {
+      return nil
+    }
+    return [
+      "latitude": Double(point.latitude),
+      "longitude": Double(point.longitude)
     ]
   }
 

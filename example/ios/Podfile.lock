@@ -1,0 +1,40 @@
+PODS:
+  - AMapFoundation-NO-IDFA (1.9.0)
+  - AMapSearch-NO-IDFA (9.8.0):
+    - AMapFoundation-NO-IDFA (>= 1.9.0)
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - kw_amap_search (0.1.0):
+    - AMapFoundation-NO-IDFA (= 1.9.0)
+    - AMapSearch-NO-IDFA (= 9.8.0)
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - kw_amap_search (from `.symlinks/plugins/kw_amap_search/ios`)
+
+SPEC REPOS:
+  trunk:
+    - AMapFoundation-NO-IDFA
+    - AMapSearch-NO-IDFA
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  kw_amap_search:
+    :path: ".symlinks/plugins/kw_amap_search/ios"
+
+SPEC CHECKSUMS:
+  AMapFoundation-NO-IDFA: a2e3c895398d7ee757278e1a0a8f9359da4b146e
+  AMapSearch-NO-IDFA: c0afd2a69a076d4228becda4401dbe4a279a03ef
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  kw_amap_search: 27712794198fad11cd894825636421ac628a29e0
+
+PODFILE CHECKSUM: c66a64ec6fc23cc72ced7fec48d80be1941bafbb
+
+COCOAPODS: 1.16.2

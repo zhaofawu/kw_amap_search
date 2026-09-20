@@ -1,6 +1,6 @@
 name: kw_amap_search
-description: Flutter plugin for AMap POI keyword and nearby search on Android and iOS.
-version: 0.0.3
+description: Flutter plugin for native AMap POI search and reverse geocoding on Android and iOS, with request cancellation and timeouts.
+version: 0.1.0
 repository: https://github.com/zhaofawu/kw_amap_search
 topics:
   - amap

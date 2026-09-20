@@ -40,12 +40,29 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
     throw UnimplementedError('updatePrivacyAgree() has not been implemented.');
   }
 
-  Future<List<SearchResultItem>> searchByKeyword(AmapKeywordSearchQuery query) {
+  Future<List<SearchResultItem>> searchByKeyword(
+    AmapKeywordSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
     throw UnimplementedError('searchByKeyword() has not been implemented.');
   }
 
-  Future<List<SearchResultItem>> searchNearby(AmapAroundSearchQuery query) {
+  Future<List<SearchResultItem>> searchNearby(
+    AmapAroundSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
     throw UnimplementedError('searchNearby() has not been implemented.');
+  }
+
+  Future<AmapRegeocodeResult> reverseGeocode(
+    AmapReverseGeocodeQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
+    throw UnimplementedError('reverseGeocode() has not been implemented.');
+  }
+
+  Future<bool> cancelRequest(String requestId) {
+    throw UnimplementedError('cancelRequest() has not been implemented.');
   }
 
   /// Backward-compatible wrapper for the first public Android API.
@@ -55,6 +72,7 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
     String types = '',
     int pageSize = 20,
     int pageNum = 1,
+    AmapSearchRequestOptions? options,
   }) {
     return searchByKeyword(
       AmapKeywordSearchQuery(
@@ -64,6 +82,7 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
         pageSize: pageSize,
         pageNum: pageNum,
       ),
+      options: options,
     );
   }
 
@@ -78,6 +97,8 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
     String types = '',
     int pageSize = 20,
     int pageNum = 1,
+    AmapAroundSortRule sortRule = AmapAroundSortRule.distance,
+    AmapSearchRequestOptions? options,
   }) {
     return searchNearby(
       AmapAroundSearchQuery(
@@ -88,7 +109,9 @@ abstract class KwAmapSearchPlatform extends PlatformInterface {
         types: types,
         pageSize: pageSize,
         pageNum: pageNum,
+        sortRule: sortRule,
       ),
+      options: options,
     );
   }
 }

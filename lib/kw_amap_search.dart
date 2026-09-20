@@ -26,15 +26,34 @@ class KwAmapSearch {
   }
 
   static Future<List<SearchResultItem>> searchByKeyword(
-    AmapKeywordSearchQuery query,
-  ) {
-    return KwAmapSearchPlatform.instance.searchByKeyword(query);
+    AmapKeywordSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
+    return KwAmapSearchPlatform.instance.searchByKeyword(
+      query,
+      options: options,
+    );
   }
 
   static Future<List<SearchResultItem>> searchNearby(
-    AmapAroundSearchQuery query,
-  ) {
-    return KwAmapSearchPlatform.instance.searchNearby(query);
+    AmapAroundSearchQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
+    return KwAmapSearchPlatform.instance.searchNearby(query, options: options);
+  }
+
+  static Future<AmapRegeocodeResult> reverseGeocode(
+    AmapReverseGeocodeQuery query, {
+    AmapSearchRequestOptions? options,
+  }) {
+    return KwAmapSearchPlatform.instance.reverseGeocode(
+      query,
+      options: options,
+    );
+  }
+
+  static Future<bool> cancelRequest(String requestId) {
+    return KwAmapSearchPlatform.instance.cancelRequest(requestId);
   }
 
   /// Legacy keyword-search API kept for source compatibility.
@@ -47,6 +66,7 @@ class KwAmapSearch {
     String types = '',
     int pageSize = 20,
     int pageNum = 1,
+    AmapSearchRequestOptions? options,
   }) {
     return KwAmapSearchPlatform.instance.searchKeyword(
       keyword: keyword,
@@ -54,6 +74,7 @@ class KwAmapSearch {
       types: types,
       pageSize: pageSize,
       pageNum: pageNum,
+      options: options,
     );
   }
 
@@ -69,6 +90,8 @@ class KwAmapSearch {
     String types = '',
     int pageSize = 20,
     int pageNum = 1,
+    AmapAroundSortRule sortRule = AmapAroundSortRule.distance,
+    AmapSearchRequestOptions? options,
   }) {
     return KwAmapSearchPlatform.instance.searchAround(
       latitude: latitude,
@@ -79,6 +102,8 @@ class KwAmapSearch {
       types: types,
       pageSize: pageSize,
       pageNum: pageNum,
+      sortRule: sortRule,
+      options: options,
     );
   }
 }

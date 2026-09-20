@@ -13,6 +13,10 @@ public class KwAmapSearchPlugin: NSObject, FlutterPlugin {
     super.init()
   }
 
+  deinit {
+    handler.dispose()
+  }
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
       name: "kw_amap_search",
@@ -35,6 +39,10 @@ public class KwAmapSearchPlugin: NSObject, FlutterPlugin {
       handler.searchKeyword(call, result: result)
     case "searchAround":
       handler.searchAround(call, result: result)
+    case "reverseGeocode":
+      handler.reverseGeocode(call, result: result)
+    case "cancelRequest":
+      handler.cancelRequest(call, result: result)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -47,13 +55,16 @@ protocol KwAmapSearchHandling {
   func updatePrivacyAgree(_ call: FlutterMethodCall, result: @escaping FlutterResult)
   func searchKeyword(_ call: FlutterMethodCall, result: @escaping FlutterResult)
   func searchAround(_ call: FlutterMethodCall, result: @escaping FlutterResult)
+  func reverseGeocode(_ call: FlutterMethodCall, result: @escaping FlutterResult)
+  func cancelRequest(_ call: FlutterMethodCall, result: @escaping FlutterResult)
+  func dispose()
 }
 
 private final class MissingAmapSearchHandler: KwAmapSearchHandling {
   private let error = FlutterError(
-    code: "AMAP_IOS_SDK_UNAVAILABLE",
+    code: "sdk_unavailable",
     message: "AMapSearchKit and AMapFoundationKit are required on iOS.",
-    details: nil
+    details: ["platform": "ios"]
   )
 
   func setApiKey(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -75,4 +86,14 @@ private final class MissingAmapSearchHandler: KwAmapSearchHandling {
   func searchAround(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     result(error)
   }
+
+  func reverseGeocode(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    result(error)
+  }
+
+  func cancelRequest(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    result(error)
+  }
+
+  func dispose() {}
 }
